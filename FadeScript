@@ -1,0 +1,46 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class FadeScript : MonoBehaviour
+{
+    Renderer rend;
+    Color colblk = new Color(0.0f,0.0f,0.0f, 0.8666667f);
+    public float duration = 15.0f;
+
+    private void Start()
+    {
+        rend = GetComponent<Renderer>();
+    }
+
+    private void OnTriggerEnter2D(Collider2D col)
+    {
+        if(col.tag == "Player")
+        {
+            FadeOut();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D col)
+    {
+        if (col.tag == "Player")
+        {
+            FadeIn();
+        }
+    }
+
+    private void FadeOut()
+    {
+        for (float i=0f; i< duration; i+=Time.deltaTime)
+        {
+            rend.material.color = Color.Lerp(Color.black, Color.clear, i/duration);
+        }
+
+      //rend.material.SetColor("_Color", Color.clear);  
+    }
+
+    private void FadeIn()
+    {
+        rend.material.SetColor("_Color", colblk);
+    }
+}
