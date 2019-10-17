@@ -1,0 +1,113 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Flashlight : MonoBehaviour
+{
+    public GameObject flashlight;
+    public GameObject button;
+    public int timeint = 20;
+
+    public Sprite s0;
+    public Sprite s1;
+    public Sprite s2;
+    public Sprite s3;
+    public Sprite s4;
+    public Sprite s5;
+
+    private float time;
+
+    public static bool isOn;
+    private bool isEmpty;
+    private bool full = true;
+    public static int battery;
+    private float secs;
+
+    public Text batnum;
+
+    // Use this for initialization
+    void Start()
+    {
+        isOn = true;
+        battery += 2;
+        button.GetComponent<Image>().sprite = s5;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (isOn == true)
+        {
+            secs += Time.deltaTime;
+        }
+        Timer();
+        time += Time.deltaTime;
+        batnum.text = battery.ToString();
+    }
+
+    void Timer()
+    {
+        if (secs >= timeint)
+        {
+            button.GetComponent<Image>().sprite = s4;
+            full = false;
+        }
+
+        if (secs >= 2 * timeint)
+        {
+            button.GetComponent<Image>().sprite = s3;
+        }
+
+        if (secs >= 3 * timeint)
+        {
+            button.GetComponent<Image>().sprite = s2;
+        }
+
+        if (secs >= 4 * timeint)
+        {
+            button.GetComponent<Image>().sprite = s1;
+        }
+
+        if (secs >= 5 * timeint)
+        {
+            button.GetComponent<Image>().sprite = s0;
+            flashlight.GetComponentInChildren<Light>().intensity = 0;
+            isEmpty = true;
+        }
+    }
+
+    public void addBattery()
+    {
+        if (full != true)
+        {
+            if (battery > 0)
+            {
+                secs = 0;
+                flashlight.GetComponentInChildren<Light>().intensity = 17.2f;
+                button.GetComponent<Image>().sprite = s5;
+                full = true;
+                battery--;
+                isEmpty = false;
+            }
+        }
+    }
+
+    public void onoff()
+    {
+        if (isOn)
+        {
+            flashlight.GetComponentInChildren<Light>().intensity = 0;
+            isOn = !isOn;
+        }
+        else if (!isOn)
+        {
+            if (isEmpty == false)
+            {
+                flashlight.GetComponentInChildren<Light>().intensity = 17.2f;
+                isOn = !isOn;
+            }
+        }
+    }
+
+}
