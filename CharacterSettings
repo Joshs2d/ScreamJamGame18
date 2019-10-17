@@ -1,0 +1,36 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class CharacterSettings : MonoBehaviour {
+
+    public static bool paused;
+    public static bool pausegame;
+    public GameObject pausebut;
+    public Sprite play;
+    public Sprite pausesprite;
+
+    private void Update()
+    {
+        if(pausegame == true)
+        {
+            pause();
+        }
+    }
+
+    public void pause()
+    {
+        paused = !paused;
+        if (paused == true)
+        {
+            pausebut.GetComponent<Image>().sprite = play;
+            Time.timeScale = 0;
+        }
+        else if (paused == false)
+        {
+            pausebut.GetComponent<Image>().sprite = pausesprite;
+            Time.timeScale = 1;
+        }
+    }
+}
