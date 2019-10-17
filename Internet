@@ -1,0 +1,32 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Internet : MonoBehaviour {
+    public GameObject sHOME;
+
+    private int curint = 0;
+    private int prevint= 0; //goes from 0 to 9
+
+    private void Update()
+    {
+    }
+
+    public void HOMEBUT()
+    {
+        prevint = curint;
+        curint = 0;
+    }
+
+    public void backbut()
+    {
+        curint = prevint;
+    }
+
+    public void gosEND()
+    {
+        prevint = curint;
+        curint = 9;
+    }
+}
