@@ -1,0 +1,289 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MovementAnim : MonoBehaviour {
+    public SpriteRenderer player;
+
+    public float numinterval = 1.5f;
+
+    public Sprite Forward;
+    public Sprite forward_crouch_right;
+    public Sprite forright_walk1;
+    public Sprite forright_walk2;
+    //public Sprite right_run1;
+    //public Sprite right_run2;
+
+    public Sprite forward_stand_left;
+    public Sprite forward_couch_left;
+    public Sprite forleft_walk1;
+    public Sprite forleft_walk2;
+
+    public Sprite Back;
+    public Sprite back_crouch;
+    public Sprite up_walk1;
+    public Sprite up_walk2;
+
+
+    public Sprite left;
+    public Sprite left_crouch;
+    public Sprite left_walk1;
+    public Sprite left_walk2;
+
+    public Sprite right;
+    public Sprite right_crouch;
+    public Sprite right_walk1;
+    public Sprite right_walk2;
+
+
+
+    private bool isWalking = false;
+    private bool isRunning = false;
+    private bool isStanding = true;
+
+    private float time;
+    private float secs;
+
+    private bool dirup;
+    private bool dirdownr;
+    private bool dirdownl;
+    private bool dirleft;
+    private bool dirright;
+
+    private void Update()
+    {
+        dirup = Move.dirup;
+        dirdownr = Move.dirdownr;
+        dirdownl = Move.dirdownl;
+        dirleft = Move.dirleft;
+        dirright = Move.dirright;
+        speed();
+        direction();
+        time += Time.deltaTime;
+
+        if (time >= numinterval)
+        {
+            time = 0;
+        }
+    }
+
+    void direction()
+    {
+        if (dirup)
+        {
+            player.sprite = Back;
+            if (isStanding)
+            {
+                standup();
+            }
+            else if (isWalking)
+            {
+                walkup();
+            }
+            else if (isRunning)
+            {
+                runup();
+            }
+        }
+        else if (dirleft)
+        {
+            player.sprite = left;
+            if (isStanding)
+            {
+                standleft();
+            }
+            else if (isWalking)
+            {
+                walkleft();
+            }
+            else if (isRunning)
+            {
+                runleft();
+            }
+        }
+        else if (dirright)
+        {
+            player.sprite = right;
+            if (isStanding)
+            {
+                standright();
+            }
+            else if (isWalking)
+            {
+                walkright();
+            }
+            else if (isRunning)
+            {
+                runright();
+            }
+        }
+        else if (dirdownr)
+        {
+            player.sprite = Forward;
+            if (isStanding)
+            {
+                standdownr();
+            }
+            else if (isWalking)
+            {
+                walkdownr();
+            }
+            else if (isRunning)
+            {
+                rundown();
+            }
+        }
+        else if (dirdownl)
+        {
+            player.sprite = forward_stand_left;
+            if (isStanding)
+            {
+                standdownl();
+            }
+            else if (isWalking)
+            {
+                walkdownl();
+            }
+            else if (isRunning)
+            {
+                rundown();
+            }
+        }
+    }
+
+    void speed()
+    {
+        if(Move.Speed == 0)
+        {
+            isStanding = true;
+            isWalking = false;
+            isRunning = false;
+        }
+        if (Move.Speed > 0 && Move.Speed <= 20)
+        {
+            isStanding = false;
+            isWalking = true;
+            isRunning = false;
+        }
+        if (Move.Speed > 20)
+        {
+            isStanding = false;
+            isWalking = false;
+            isRunning = true;
+        }
+    }
+
+    //should cycle through three images, but faster.
+
+    void standdownr()
+    {
+        if(time < (numinterval/2))
+        {
+            player.sprite = Forward;
+        }
+        else
+        {
+            player.sprite = forward_crouch_right;
+        }
+    }
+    void standdownl()
+    {
+        if (time < (numinterval / 2))
+        {
+            player.sprite = forward_stand_left;
+        }
+        else
+        {
+            player.sprite = forward_couch_left;
+        }
+    }
+    void standup()
+    {
+        if (time < (numinterval / 2))
+        {
+            player.sprite = Back;
+        }
+        else
+        {
+            player.sprite = back_crouch;
+        }
+    }
+    void standright()
+    {
+        if (time < (numinterval / 2))
+        {
+            player.sprite = right;
+        }
+        else
+        {
+            player.sprite = right_crouch;
+        }
+    }
+    void standleft()
+    {
+        if (time < (numinterval / 2))
+        {
+            player.sprite = left;
+        }
+        else
+        {
+            player.sprite = left_crouch;
+        }
+    }
+
+    void walkup()
+    {
+        if (time < (numinterval / 2))
+        {
+            player.sprite = up_walk1;
+        }
+        else
+        {
+            player.sprite = up_walk2;
+        }
+    }
+    void walkdownr()
+    {
+        if(time < (numinterval/2))
+        {
+            player.sprite = forright_walk1;
+        }
+        else
+        {
+            player.sprite = forright_walk2;
+        }
+    }
+    void walkdownl()
+    {
+        if (time < (numinterval / 2))
+        {
+            player.sprite = forleft_walk1;
+        }
+        else
+        {
+            player.sprite = forleft_walk2;
+        }
+    }
+    void walkleft()
+    {
+        if (time < (numinterval / 2))
+        {
+            player.sprite = left_walk1;
+        }
+        else
+        {
+            player.sprite = left_walk2;
+        }
+    }
+    void walkright()
+    {
+        if (time < (numinterval / 2))
+        {
+            player.sprite = right_walk1;
+        }
+        else
+        {
+            player.sprite = right_walk2;
+        }
+    }
+}
