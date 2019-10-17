@@ -1,0 +1,227 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System;
+using UnityEngine.UI;
+
+public class Interactables: MonoBehaviour
+{
+    private Ray rayLocation;
+    private RaycastHit2D hit;
+
+    private float distp;
+    public float maxdist;
+
+    private bool ispaused;
+    bool open = false;
+
+    public static String trigname;
+    public static bool radiohit = false;
+    private Vector3 v1;
+
+    private int hitnum = 0;
+
+    public Text bottomtext;
+
+    public Animator animator1;
+
+    private Collision2D col;
+    private bool sopen;
+
+    //-------Pick up objects---------//
+    private static bool key1;
+    private static bool waterbucket;
+
+    // Use this for initialization
+    void Start()
+    {
+        maxdist = 3f;
+    }
+
+    void Update()
+    {   
+        Clickers();
+        ispaused = CharacterSettings.paused;
+    }
+
+    private void Clickers()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            rayLocation = Camera.main.ScreenPointToRay(Input.mousePosition);
+            hit = Physics2D.Raycast(rayLocation.origin, rayLocation.direction);
+            if (hit.collider != null)  //Changed
+            {
+                if (ispaused == false)
+                {
+                    distp = Vector3.Distance(transform.position, hit.transform.position);
+                    //Here goes the selectable items
+                    if (distp <= maxdist)
+                    {
+                        Door();
+                        pickup();
+                        Note();
+                        Battery();
+                        bathroomDoor();
+                        Conversation();
+                        bucket();
+                        firepuzzle();
+                        keypad();
+                    }
+                }
+            }
+        }
+    }
+    
+    private void Note()
+    {
+        if (hit.collider.tag == "Note")
+        {
+            NoteTrigger.trigger = true;
+        }
+    }
+
+    private void Door()
+    {
+        if (hit.collider.tag == "Unlocked")
+        {
+            if (open == false) // change rotation and location
+            {
+                hit.collider.gameObject.transform.Rotate(new Vector3(0.0f, 50.87f, 0.0f));
+                hit.collider.gameObject.transform.Translate(new Vector3(-2.3f, 0.0f, 0.0f));
+                hit.collider.gameObject.GetComponent<SpriteRenderer>().flipX = true;
+                open = true;
+            }
+            else if(open == true) //go back to original spot
+            {
+                hit.collider.gameObject.transform.Translate(new Vector3(2.3f, 0.0f, 0.0f));
+                hit.collider.gameObject.transform.Rotate(new Vector3(0.0f, -50.87f, 0.0f));
+                hit.collider.gameObject.GetComponent<SpriteRenderer>().flipX = false;
+                open = false;
+            }
+        }
+        else if(hit.collider.tag == "Locked")
+        {
+            //make a locked noise
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        col = collision;
+        if (collision.gameObject.name == "SideDoor_close")
+        {
+            collision.gameObject.SetActive(false);
+            collision.transform.parent.GetChild(0).gameObject.SetActive(true);
+            sopen = true;
+        }
+        float timer = 0f;
+        if (sopen)
+        {
+            timer += Time.deltaTime;
+            if(timer == 3)
+            {
+                col.transform.parent.GetChild(1).gameObject.SetActive(true);
+                col.gameObject.SetActive(false);
+                sopen = false;
+            }
+        }
+    }
+
+
+    private void bathroomDoor()
+    {
+        if(hit.collider.name == "bathroomstalldoors")
+        {
+            Destroy(hit.transform.gameObject);
+        }
+    }
+
+    private void Battery()
+    {
+        if (hit.collider.tag == "Battery")
+        {
+            Flashlight.battery++;
+            Destroy(hit.transform.gameObject);
+            bottomtext.text = "You picked up a Battery";
+            animator1.SetTrigger("IsActivated");
+        }
+    }
+
+    private void Conversation()
+    {
+        if(hit.collider.tag == "Conversation") {
+            DialogueTrigger.trigger = true;
+        }
+    }
+
+
+    private void radio()
+    {
+        if (hit.collider.name == "Radio" && hitnum == 0)
+        {
+            hitnum = 1;
+            hit.transform.GetComponent<AudioSource>().Play();
+        }
+        else if (hit.collider.name == "Radio" && hitnum == 1)
+        {
+            hit.transform.GetComponent<AudioSource>().Pause();
+            hitnum = 2;
+        }
+        else if (hit.collider.name == "Radio" && hitnum == 2)
+        {
+            hit.transform.GetComponent<AudioSource>().UnPause();
+            hitnum = 1;
+        }
+    }
+
+    private void pickup()
+    {
+        if(hit.collider.name == "Yellow Key")
+        {
+            key1 = true;
+            Destroy(hit.transform.gameObject);
+            bottomtext.text = "You picked up a yellow key";
+            animator1.SetTrigger("IsActivated");
+        }
+    }
+
+    //PUZZLE INTERACTIONS~!!-----------------------------------
+
+    private void bucket()
+    {
+        if (hit.collider.name == "waterbucket")
+        {
+            waterbucket = true;
+            Destroy(hit.collider.gameObject);
+            //replace with other sprite of dripping water.
+        }
+    }
+    private void firepuzzle()
+    {
+        if (hit.collider.tag == "FirePuz")
+        {
+            if (waterbucket)
+            {
+                //Destroy its childeren
+                bottomtext.text = "You put out the flames.";
+                animator1.SetTrigger("IsActivated");
+            }
+            else if (!waterbucket)
+            {
+                bottomtext.text = "''I think I see something in the flames...''";
+                animator1.SetTrigger("IsActivated");
+            }
+        }
+    }
+
+    private void keypad()
+    {
+        if(hit.collider.tag == "Keypad")
+        {
+            Debug.Log("KEY");
+            //activate the keypadUI and possibly reset any numbers that have been entered. must also add a back arrow to get out of the keypad ui screen and possibly pause the game while making actions.
+        }
+    }
+
+}
