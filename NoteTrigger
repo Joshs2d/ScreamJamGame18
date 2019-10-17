@@ -1,0 +1,24 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class NoteTrigger: MonoBehaviour {
+
+    public Notes Note;
+
+    public static bool trigger = false;
+
+    public void TriggerNote()
+    {
+        FindObjectOfType<NoteManager>().StartNote(Note);
+    }
+
+    public void Update()
+    {
+        if (trigger == true)
+        {
+            TriggerNote();
+            trigger = false;
+        }
+    }
+}
