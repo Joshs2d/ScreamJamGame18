@@ -1,0 +1,161 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+    public float speed1 = 3.0f;
+    public float speed2 = 3.0f;
+    public GameObject[] waypoints;
+    private int waypointnum = 0;
+
+    //visibility higher when flashlight is on.
+    public float near = 5f;
+    public GameObject player;
+    private Rigidbody2D rb;
+
+    private bool chase = false;
+    private bool chaseend = false;
+    private bool shakedoor = false;
+    private GameObject doorobj;
+
+    private float startingPos;
+    private float startingPosy;
+
+    private Vector2 Target { get { return player.transform.position; } }
+    private Vector2 Position
+    {
+        get
+        {
+            return transform.position;
+        }
+        set
+        {
+            transform.position = value;
+        }
+    }
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        Position = waypoints[0].transform.position;
+        waypointnum = 0;
+    }
+    //IF spotted speed should increase speed and decrease when reset.
+    private void ChaseChar()
+    {
+        float dist = Vector2.Distance(Position, Target);
+        if (dist < near)
+        {
+            float step = speed2 * Time.fixedDeltaTime;
+            Position = Vector2.MoveTowards(Position, Target, step);
+            rb.MovePosition(Position);
+        }
+        
+    }
+
+    private void resetpos()
+    {
+        waypointnum = 0;
+        Position = new Vector2(waypoints[0].transform.position.x, waypoints[0].transform.position.y);
+    }
+
+    private void FixedUpdate()
+    {
+        if(doorobj != null) //shouldnt shake other door, and should be faster. maybe go by name instead of tag.
+        {
+            doorobj.GetComponent<Animator>().SetBool("isHit", shakedoor);
+        }
+        float dist = Vector2.Distance(Position, Target);
+        waypointIndicator();
+        
+        if (dist < near)
+        {
+            chase = true;
+        }
+        else if(chase == true && dist > near) //AND IF TIME HAS GONE ON
+        {
+            chase = false;
+            chaseend = true;
+        }
+        else
+        {
+            float step = speed2 * Time.fixedDeltaTime;
+            Position = Vector2.MoveTowards(Position, waypoints[waypointnum].transform.position, step);
+            rb.MovePosition(Position);
+        }
+        
+        if (chase == true)//HAS BEGUN CHASING, CHASES
+        {
+            ChaseChar();
+        }
+        else if (chaseend == true)
+        {
+
+            //resetpos();
+        }
+
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.transform.name == "Door_close")
+        {
+            doorobj = collision.gameObject;
+            shakedoor = true;
+            doorobj.GetComponent<Animator>().SetBool("isHit", shakedoor); 
+        }
+        else
+        {
+            shakedoor = false;
+            // IF COLLIDE WITH A WALL or Anything FOR LONGER THAN 2 SECONDS WILL GO BACK TO GOING AFTER WAYP OR RESET.
+        }
+    }
+
+    public void waypointIndicator()
+    {
+        bool adding = true;
+        bool subbing = false;
+        bool moving = true;
+        if(Position == new Vector2(waypoints[0].transform.position.x, waypoints[0].transform.position.y))
+        {
+            waypointnum = 0;
+        }
+
+        if (Position == new Vector2(waypoints[waypointnum].transform.position.x, waypoints[waypointnum].transform.position.y))
+        {
+            moving = true;
+        }
+        else { moving = false; }
+
+        if (moving)
+        {
+            if (adding)
+            {
+                if (waypointnum < waypoints.Length-1)
+                {
+                    //After few seconds change from not moving to moving
+                    waypointnum++;
+                }
+                else if(waypointnum == waypoints.Length-1)
+                {
+                    adding = false;
+                    subbing = true;
+                }
+            }
+            else if (subbing)
+            {
+                if (waypointnum > 0)
+                {
+                    waypointnum--;
+                }
+                else if(waypointnum == 0)
+                {
+                    adding = true;
+                    subbing = false;
+                    
+                }
+            }
+        }
+    }
+        
+}
