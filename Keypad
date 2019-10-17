@@ -1,0 +1,139 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Keypad : MonoBehaviour {
+    public GameObject numberpad;
+    public Sprite notactivated;
+    public Sprite activated;
+    public Sprite wrong;
+    public static List<int> password = new List<int>();
+
+    private List<int> keycode = new List<int>();
+    private float time;
+
+    private void Start()
+    {
+        createPassword();
+    }
+    private void FixedUpdate()
+    {
+        timer();
+    }
+
+    public void keyzero()
+    {
+        if(keycode.Count < 5)
+        {
+            keycode.Add(0);
+        }
+    }
+	public void keyone()
+    {
+        if (keycode.Count < 5)
+        {
+            keycode.Add(1);
+        }
+    }
+    public void keytwo()
+    {
+        if (keycode.Count < 5)
+        {
+            keycode.Add(2);
+        }
+    }
+    public void keythree()
+    {
+        if (keycode.Count < 5)
+        {
+            keycode.Add(3);
+        }
+    }
+    public void keyfour()
+    {
+        if (keycode.Count < 5)
+        {
+            keycode.Add(4);
+        }
+    }
+    public void keyfive()
+    {
+        if (keycode.Count < 5)
+        {
+            keycode.Add(5);
+        }
+    }
+    public void keysix()
+    {
+        if (keycode.Count < 5)
+        {
+            keycode.Add(6);
+        }
+    }
+    public void keyseven()
+    {
+        if (keycode.Count < 5)
+        {
+            keycode.Add(7);
+        }
+    }
+    public void keyeight()
+    {
+        if (keycode.Count < 5)
+        {
+            keycode.Add(8);
+        }
+    }
+    public void keynine()
+    {
+        if (keycode.Count < 5)
+        {
+            keycode.Add(9);
+        }
+    }
+    public void execute()
+    {
+        if (password[0] == keycode[0] && password[1] == keycode[1] && password[2] == keycode[2] && password[3] == keycode[3] && password[4] == keycode[4])
+        {
+            numberpad.GetComponent<Image>().sprite = activated;
+            //then lowers and door unlocks
+        }
+        else
+        {
+            numberpad.GetComponent<Image>().sprite = wrong;
+            if (time > 5f)
+            {
+                resetenteredkeys();
+            }
+        }
+    }
+
+    void timer()
+    {
+        if (keycode.Count > 1)
+        {
+            time += Time.deltaTime;
+            if (time > 5f)
+            {
+                resetenteredkeys();
+            }
+        }
+    }
+
+    private void resetenteredkeys()
+    {
+        numberpad.GetComponent<Image>().sprite = notactivated;
+        time = 0f;
+        keycode.Clear();
+    }
+
+    void createPassword()
+    {
+        password.Add(Random.Range(0, 10));
+        password.Add(Random.Range(0, 10));
+        password.Add(Random.Range(0, 10));
+        password.Add(Random.Range(0, 10));
+        password.Add(Random.Range(0, 10));
+    }
+}
