@@ -1,0 +1,126 @@
+//Gathering resources
+using UnityEngine;
+using System.Collections;
+
+//The Move class decleration
+public class Move : MonoBehaviour
+{
+    //How quickly the player follows the mouse
+    public static float Speed = 5f;
+    public static bool canMove = true;
+    public float maxSpeed = 20f;
+    public float distance = .1f;
+    private float moveSpeed = 5f;
+
+    public GameObject flashlight;
+
+    public static bool dirup = false;
+    public static bool dirdownr = true;
+    public static bool dirdownl = false;
+    public static bool dirright = false;
+    public static bool dirleft = false;
+
+    //REMOVE THE ABILITY TO MOVE WHEN INTERACTING OR CLICKING ON SOMETHING
+    void Update()
+    {
+        if (Input.touchCount > 0 && (Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetTouch(0).phase == TouchPhase.Began || Input.GetTouch(0).phase == TouchPhase.Stationary))
+        {
+            Speed = 5f;
+            moveSpeed = 5f;
+            maxSpeed = 20f;
+        }
+        else
+        {
+            Speed = 0;
+            moveSpeed = 0;
+            maxSpeed = 0;
+        }
+
+        if (Input.mousePresent && canMove)
+        {
+            movePlayer();
+            turnFlashlight();
+        }
+    }
+
+    private void movePlayer()
+    {
+        //Converting mouse position into Vector3
+        Vector3 Target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        //Fixing Z-Axis
+        Target.z = transform.position.z;
+        Speed = (moveSpeed + (moveSpeed * (Vector3.Distance(Target, transform.position))));
+        if (Speed > maxSpeed)
+        {
+            Speed = maxSpeed;
+        }
+        if (Vector2.Distance(Target, transform.position) <= 1f)
+        {
+            Speed = 0;
+        }
+
+        //Actually move the player towards the mouse.
+        transform.position = Vector3.MoveTowards(transform.position, Target, Speed * Time.deltaTime / transform.localScale.x);
+    }
+
+    private void turnFlashlight()
+    {
+        Vector3 Target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 Click = new Vector3(Target.x, Target.y, 0.0f);
+
+        if (Input.GetMouseButton(0) & !CharacterSettings.paused)
+        {
+            flashlight.transform.LookAt(Click);
+            detectDirection();
+        }
+        
+
+    }
+
+    private void detectDirection()
+    {
+        if(270f <= flashlight.transform.eulerAngles.x && flashlight.transform.eulerAngles.x <= 315f) //up
+        {
+            dirup = true;
+            dirdownr = false;
+            dirdownl = false;
+            dirright = false;
+            dirleft = false;
+        }
+        else if (((0 <= flashlight.transform.eulerAngles.x && flashlight.transform.eulerAngles.x <= 45f) || (315 <= flashlight.transform.eulerAngles.x && flashlight.transform.eulerAngles.x <= 360f)) && flashlight.transform.eulerAngles.y == 270f) //left
+        {
+            dirup = false;
+            dirdownr = false;
+            dirdownl = false;
+            dirright = false;
+            dirleft = true;
+        }
+        else if (((0 <= flashlight.transform.eulerAngles.x && flashlight.transform.eulerAngles.x <= 45f) || (315 <= flashlight.transform.eulerAngles.x && flashlight.transform.eulerAngles.x <= 360f)) && flashlight.transform.eulerAngles.y == 90f) //right
+        {
+            dirup = false;
+            dirdownr = false;
+            dirdownl = false;
+            dirright = true;
+            dirleft = false;
+        }
+        else if ((67.5f <= flashlight.transform.eulerAngles.x && flashlight.transform.eulerAngles.x <= 90f) && flashlight.transform.eulerAngles.y == 90f) //down right
+        {
+            dirup = false;
+            dirdownr = true;
+            dirdownl = false;
+            dirright = false;
+            dirleft = false;
+            //change flashlight position when facing this direction
+        }
+        else if ((45f <= flashlight.transform.eulerAngles.x && flashlight.transform.eulerAngles.x <= 67.5f) && flashlight.transform.eulerAngles.y == 270f) //downleft
+        {
+            dirup = false;
+            dirdownr = false;
+            dirdownl = true;
+            dirright = false;
+            dirleft = false;
+            //change flashlight position when facing this direction
+        }
+    }
+}
